@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Levi Kapkan Counter</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #450000 0%,
+                    #170000 30%,
+                    #070707 70%
+                );
+
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        /* TOP TITLE */
+
+        .title {
+            color: #ff2020;
+
+            font-size: clamp(32px, 7vw, 55px);
+            font-weight: 900;
+
+            letter-spacing: 3px;
+            text-transform: uppercase;
+
+            text-shadow:
+                0 0 10px #ff0000,
+                0 0 25px #ff0000,
+                0 0 50px rgba(255, 0, 0, 0.5);
+
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 15px;
+            letter-spacing: 1px;
+
+            margin-bottom: 35px;
+        }
+
+        /* MAIN CARD */
+
+        .counter-box {
+            background: rgba(12, 12, 12, 0.95);
+
+            border: 1px solid #700000;
+            border-radius: 20px;
+
+            padding: 50px 30px;
+
+            box-shadow:
+                0 0 35px rgba(255, 0, 0, 0.15),
+                inset 0 0 35px rgba(255, 0, 0, 0.04);
+        }
+
+        .counter-label {
+            color: #777;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* BIG NUMBER */
+
+        #counter {
+            color: #ff2020;
+
+            font-size: clamp(90px, 18vw, 150px);
+            font-weight: 900;
+
+            line-height: 1;
+
+            margin: 20px 0;
+
+            text-shadow:
+                0 0 15px #ff0000,
+                0 0 35px #ff0000,
+                0 0 70px rgba(255, 0, 0, 0.4);
+        }
+
+        .death-text {
+            color: #ccc;
+
+            font-size: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .death-text b {
+            color: #ff2020;
+        }
+
+        /* BUTTONS */
+
+        button {
+            border: none;
+            border-radius: 10px;
+
+            padding: 16px 30px;
+
+            margin: 5px;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: 0.15s ease;
+        }
+
+        .add {
+            background: #d90000;
+            color: white;
+
+            box-shadow:
+                0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .add:hover {
+            background: #ff2020;
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 0 30px rgba(255, 0, 0, 0.7);
+        }
+
+        .add:active {
+            transform: translateY(0);
+        }
+
+        .undo {
+            background: #222;
+            color: #999;
+        }
+
+        .undo:hover {
+            background: #333;
+            color: white;
+        }
+
+        /* STATUS */
+
+        .status {
+            margin-top: 25px;
+
+            color: #555;
+
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .online-dot {
+            display: inline-block;
+
+            width: 7px;
+            height: 7px;
+
+            background: #ff2020;
+
+            border-radius: 50%;
+
+            margin-right: 6px;
+
+            box-shadow: 0 0 8px red;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            margin-top: 25px;
+
+            color: #444;
+
+            font-size: 11px;
+        }
+
+        /* SMALL SCREEN */
+
+        @media (max-width: 500px) {
+
+            .counter-box {
+                padding: 40px 15px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            button {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="title">
+            Levi Kapkan Counter
+        </div>
+
+        <div class="subtitle">
+            An entirely legitimate statistical database
+        </div>
+
+
+        <div class="counter-box">
+
+            <div class="counter-label">
+                Confirmed Kapkan Deaths
+            </div>
+
+
+            <div id="counter">
+                0
+            </div>
+
+
+            <div class="death-text">
+                Levi has walked into a Kapkan
+                <b id="times">0</b>
+                times.
+            </div>
+
+
+            <button class="add" onclick="addDeath()">
+                + LEVI DIED
+            </button>
+
+
+            <button class="undo" onclick="removeDeath()">
+                UNDO
+            </button>
+
+
+            <div class="status">
+                <span class="online-dot"></span>
+                KAPKAN SURVEILLANCE SYSTEM ACTIVE
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+            © 2026 Levi Kapkan Research Institute
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* Load saved number */
+
+        let deaths =
+            Number(localStorage.getItem("leviDeaths")) || 0;
+
+
+        updateCounter();
+
+
+        /* Update the number on the page */
+
+        function updateCounter() {
+
+            document.getElementById("counter").innerText = deaths;
+
+            document.getElementById("times").innerText = deaths;
+
+        }
+
+
+        /* Add a death */
+
+        function addDeath() {
+
+            deaths++;
+
+            localStorage.setItem("leviDeaths", deaths);
+
+            updateCounter();
+
+        }
+
+
+        /* Undo a death */
+
+        function removeDeath() {
+
+            if (deaths > 0) {
+
+                deaths--;
+
+                localStorage.setItem("leviDeaths", deaths);
+
+                updateCounter();
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
